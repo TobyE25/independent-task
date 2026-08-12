@@ -1,12 +1,10 @@
 # Testing methodology
 
-**129 unit tests in under a second, plus 50 dbt data tests.** No network, no cloud credentials, no
-scheduler.
+**48 unit-test specifications, plus 50 dbt data tests.** No network, no cloud credentials, no scheduler.
 
-Those counts are from the working version, which was built and run before implementation was reduced to
-pseudocode. `tests/test_pipeline.py` presents the same suite as a **specification** — one stub per test,
-each naming the failure it prevents. The dbt tests in `dbt/tests/` and `dbt/models/**/*.yml` are real and
-runnable.
+`tests/test_pipeline.py` presents the suite as a **specification** — one stub per test, each naming the
+failure it prevents. The dbt tests in `dbt/tests/` and `dbt/models/**/*.yml` are real and runnable: 4
+singular tests plus 46 generic ones declared in the model, source and seed YAML.
 
 ---
 
@@ -69,8 +67,8 @@ compares to quiet ones.
 It exists because the most damaging possible outcome is a mart that is **structurally perfect and
 analytically empty** — every event feature zero on every row with a target, so the join runs, all 50
 tests pass, and the table is worthless. That failure is invisible unless something explicitly looks for
-it, and it **is what happened** on the first build: the sales window did not overlap any UK-relevant
-fixture, so the join produced nothing while every test stayed green.
+it. The obvious way to land in it: a sales window that doesn't overlap any UK-relevant fixture, so the
+join produces nothing while every test stays green.
 
 This is a sanity check on the dataset, not a data test. The dbt tests assert invariants that must always
 hold; this reports numbers a human should look at.
@@ -125,7 +123,7 @@ Named, because an unexplained gap looks like an oversight:
 | `BigQueryWarehouse` SQL | Same reasoning. The external-table DDL is dialect-specific and only a real BigQuery will tell the truth | A real cloud run |
 | The Airflow alternative | Not shipped as code — it is pseudocode in DESIGN.md §2, because installing Airflow breaks this project's dependency closure (D9) | Nothing. It is a described mapping, not an artefact |
 | `deploy/workflow.yaml` execution | Workflows has no local emulator | YAML structure validated; a real deployment |
-| End-to-end volume beyond one day | A 14-day demo and a measured 1M-transaction single day were enough to characterise it | The measurements in DESIGN.md §6 |
+| End-to-end volume beyond one day | A 14-day sample characterises the shape; the rest is arithmetic on row counts and file sizes | The estimates in DESIGN.md §6 |
 
 ---
 
@@ -136,30 +134,32 @@ pass something a developer can't reproduce.
 
 One rule worth copying: pytest is configured to turn any `DeprecationWarning` raised from the `pipeline`
 package into a **failure**, rather than filtering warnings off wholesale. Third-party noise is left
-alone. That rule is what caught `datetime.utcnow()` before it became a runtime error on a future
-Python.
+alone. That rule is what surfaces things like `datetime.utcnow()` while they are still warnings, rather
+than as a runtime error on a future Python.
 
 ---
 
-## What the tests actually caught
+## The failure modes this suite is built around
 
-The honest answer to "did any of this find a real bug?" — four, all found by running the thing rather
-than reading it:
+Tests are only worth their maintenance if each one names a specific way the pipeline could be wrong.
+These are the four that shaped the design most — each is quiet, plausible, and would survive a casual
+review:
 
-1. **Quarantine stored the wrong version of the record.** It kept the *normalised* row, but
-   normalisation is lossy exactly where validation fails: an unparseable timestamp becomes `None`, so
-   the quarantine file preserved the symptom and discarded the evidence. Whoever opened it would see
-   `kickoff_utc: null` and never know the provider sent `21/08/2026 19:00`.
-2. **The PII guard's operator precedence** — would have failed permanently, then been disabled.
-3. **A future-date test compared against wall-clock time**, so backfilling last year's data would fail
-   a test unrelated to the data's correctness.
-4. **Reconciliation reprocessed every export on every run.** `file_stem` strips `.csv` but not
-   `.parquet`, so nothing looked processed. Idempotent, so the output was always correct — it just
-   silently redid the entire day's work every time.
+1. **Quarantine storing the wrong version of the record.** The tempting implementation keeps the
+   *normalised* row, but normalisation is lossy exactly where validation fails: an unparseable timestamp
+   becomes `None`, so the quarantine file would preserve the symptom and discard the evidence. Whoever
+   opened it would see `kickoff_utc: null` and never know the provider sent `21/08/2026 19:00`. The
+   spec pins the raw row.
+2. **Operator precedence in the PII guard.** A guard of this shape is easy to write so that it either
+   never fires or fires permanently — and one that fires permanently gets disabled rather than fixed.
+3. **A future-date test comparing against wall-clock time**, which would make backfilling last year's
+   data fail a test unrelated to the data's correctness. The spec compares against the logical date.
+4. **Reconciliation reprocessing every export on every run.** If `file_stem` strips `.csv` but not
+   `.parquet`, nothing ever looks processed. The work is idempotent, so the output stays correct — it
+   just silently redoes the entire day, every time. Cost and latency degrade with no failing signal.
 
-And one the tests *didn't* catch, which the verification step did: the synthetic uplift was diluted from
-21–54% down to an observed 2.8%, because filler basket lines were drawn from a product pool that included
-pizza — a second path into the basket that the uplift never touched. Every test passed. Only looking at
-the numbers found it.
-
-Which is the argument for having a step that reports numbers rather than only asserting invariants.
+And the category no unit test reaches: **dilution**. If filler basket lines are drawn from a product
+pool that includes pizza, a second path into the basket exists that the injected uplift never touches,
+and a 21–54% signal can arrive downstream as a couple of percent. Every invariant still holds. Only
+looking at the numbers finds it — which is the argument for a verification step that *reports* figures
+rather than only asserting invariants.

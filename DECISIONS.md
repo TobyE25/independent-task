@@ -260,8 +260,8 @@ Airflow equivalent would be dynamic task mapping (`.expand()`).
 **Alternatives.** One process looping over all files; a single BigQuery load job with a wildcard URI;
 a work queue that containers claim from.
 
-**Why.** The file count is unknown at authoring time and grows with the business — **measured: 31
-files/day today, 304 at the 1M-transaction forecast**. Sharding by index handles that with no code
+**Why.** The file count is unknown at authoring time and grows with the business — **31 files/day at
+today's volume, an estimated ~304 at the 1M-transaction forecast**. Sharding by index handles that with no code
 change, gives per-shard retries so one corrupt export does not cost the other 303, and parallelises
 for free. A work queue would also work and would balance load better, but it needs coordination and
 at-least-once handling; index sharding is deterministic and needs neither.
@@ -306,27 +306,25 @@ compute anywhere.
 transforms.
 
 **Why.** The numbers don't justify it, and I'd rather say so than reach for something
-impressive. These are measured on this pipeline, not estimated:
+impressive. These are estimates, scaled from the sample data actually loaded at today's
+100k-transaction volume:
 
-| At the 1M transactions/day forecast peak | Measured |
+| At the 1M transactions/day forecast peak | Estimated |
 |---|---|
-| Line-item rows per day | 3,037,800 |
-| Raw CSV per day | 533 MB |
-| Parquet per day (snappy) | 92.7 MB — 5.8× compression |
-| Full day ingested, single process, serial | **45.0 seconds** (67,575 rows/sec) |
-| Peak memory across all 304 files | **93 MB, flat** |
+| Line-item rows per day | ~3.04 M |
+| Raw CSV per day | ~533 MB |
+| Parquet per day (snappy) | ~93 MB — ~5.8× compression |
 | Parquet per year | ~34 GB |
 
-One process ingests the entire forecast peak day in under a minute in 93MB of RAM.
-Dataflow would add a per-job cost, a Beam dependency and an entire runtime to operate and
-debug, in exchange for parallelism that would save forty seconds. Choosing the boring
+Volumes at that scale are trivial for a single process reading in batches. Dataflow would
+add a per-job cost, a Beam dependency and an entire runtime to operate and debug, in
+exchange for parallelism that would save perhaps a minute of wall clock. Choosing the boring
 option *is* the cost-consciousness the brief asks for.
 
-Worth being precise about what my first estimate got wrong: I initially assumed ~120MB/day,
-because I was implicitly treating a transaction as one row. A transaction is a *basket* of
-several line items, so the real figure is roughly 4× higher. The conclusion doesn't change,
-but the file count does — and that turned out to be the pressure that actually matters
-(D10).
+Worth being precise about what the naive estimate gets wrong: assuming ~120MB/day treats a
+transaction as one row. A transaction is a *basket* of several line items, so the real figure
+is roughly 4× higher. The conclusion doesn't change, but the file count does — and that is
+the pressure that actually matters (D10).
 
 **What would change my mind.** A stated threshold, not a vibe: above roughly 50GB/day —
 about 100× current volume — or if a single file stopped fitting comfortably in a Cloud Run
@@ -381,8 +379,8 @@ this one doesn't, which is why removing the DAG cost nothing but the file.
 
 **Alternatives.** GCP-only, requiring a project and credentials to run anything.
 
-**Why.** A reviewer can clone this and run it end to end with no cloud account and no
-spend, which is worth a great deal for an assessment. It also keeps the cloud boundary
+**Why.** The design can be reviewed, and the dbt layer exercised, with no cloud account and
+no spend — which is worth a great deal for an assessment. It also keeps the cloud boundary
 honest and visible in one place — the only genuinely cloud-specific concern is where
 bytes go and which SQL dialect runs.
 
@@ -390,6 +388,9 @@ bytes go and which SQL dialect runs.
 engine, and SQL that passes locally can still fail on BigQuery — dbt's adapter absorbs most of that
 difference, not all of it. So "one config change" is the design intent, not a demonstrated fact. The
 GCS and BigLake code is reviewable; it has not been run against a live project.
+
+The same caveat applies to `pipeline/` generally: it is pseudocode presenting the design, not an
+executed artefact.
 
 ---
 

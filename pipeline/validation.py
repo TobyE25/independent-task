@@ -22,7 +22,7 @@ from typing import Any, Dict, List, Optional, Sequence
 # and nothing else, because every dbt model, test and mart column depends on THIS shape rather than on
 # TheSportsDB's `strHomeTeam` spelling.
 #
-# In the reference implementation this is a pydantic BaseModel; the field list and the constraints are
+# This is specified as a pydantic BaseModel; the field list and the constraints are
 # what matter to the design.
 # =================================================================================================
 SPORTS_EVENT_SCHEMA = {

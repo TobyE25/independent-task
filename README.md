@@ -27,6 +27,13 @@ code, Sudo code, Diagrams, UML"*. So:
 | `tests/test_pipeline.py` | Specification                        | Each stub names the failure it prevents                                                                                                                                                                                                    |
 | `deploy/`                | Real config + commands               | Cloud Workflows definition and the`gcloud` sequence                                                                                                                                                                                      |
 
+**Where the numbers come from.** The figures quoted in `DESIGN.md` are **estimates**, derived from the
+data actually loaded — the real fixture feed and a generated sales sample at the brief's current 100,000
+transactions/day — then scaled arithmetically to the 1M/day forecast. So ~3.04M rows in ~304 files,
+~533 MB of CSV and ~5.8× Parquet compression are grounded in observed row counts and file sizes, but
+they are projections rather than benchmark results. Throughput and memory would need a production run to
+state, so I don't quote figures for them.
+
 ---
 
 ## Where to look
@@ -37,7 +44,7 @@ code, Sudo code, Diagrams, UML"*. So:
 | [DECISIONS.md](DECISIONS.md)                                           | 17 decisions, each with the alternative it beat and what would change my mind                                               |
 | [docs/architecture.md](docs/architecture.md)                           | Diagrams and UML                                                                                                            |
 | [docs/privacy.md](docs/privacy.md)                                     | PII register, GDPR mapping, erasure runbook                                                                                 |
-| [docs/testing.md](docs/testing.md)                                     | Testing methodology, and the four real bugs it caught                                                                       |
+| [docs/testing.md](docs/testing.md)                                     | Testing methodology, and the specific failure modes the suite is built to catch                                             |
 | [docs/requirements_traceability.md](docs/requirements_traceability.md) | Every requirement in the brief mapped to where it's answered                                                                |
 
 ## Layout
@@ -74,9 +81,9 @@ ingest-sales ──┘  (×8 shards)                       # privacy policy, the
 The two ingestion steps run concurrently — the sports API has nothing to do with the CSV drop, and
 coupling them would let a slow rate-limited pull delay the sales load for no reason.
 
-Locally the same `pipeline.cli` entrypoints run against the filesystem and DuckDB (`TARGET=local`), so
-the pipeline can be exercised end to end with no cloud account. See [`deploy/README.md`](deploy/README.md)
-for the GCP deployment.
+The same `pipeline.cli` entrypoints target the filesystem and DuckDB when `TARGET=local`, so the design
+carries no hard dependency on a cloud account. See [`deploy/README.md`](deploy/README.md) for the GCP
+deployment.
 
 ---
 
@@ -87,9 +94,9 @@ for the GCP deployment.
 realistic PII for the privacy layer to strip.
 
 **Any sports/pizza correlation in the demo data was injected, not discovered.** The generator boosts
-demand on real fixture dates and writes a ground-truth manifest recording exactly what it injected. The
-+19% lift the pipeline reports says nothing about consumer behaviour — it is an *end-to-end assertion*
-that the features landed on the right dates.
+demand on real fixture dates and writes a ground-truth manifest recording exactly what it injected. Any
+lift the mart shows is an *input*, not a finding, and says nothing about consumer behaviour — it exists
+as a *correctness assertion* that the features land on exactly the right dates and no others.
 
 **The combined table holds no personal data at all.** Its store × day grain makes that structural rather
 than a promise, and `dbt/tests/assert_no_pii_columns_in_marts.sql` fails the build if it ever stops

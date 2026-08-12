@@ -13,9 +13,11 @@ implementation as pseudocode inside real modules, with the declarative parts (fi
 source registry) literal. The brief permits this — *"python-based code, Sudo code, Diagrams, UML"* — and
 it keeps the submission readable.
 
-Every figure quoted below is a **measurement, not an estimate**: I built and ran the pipeline end to end
-before reducing it to this form. So "45.0 seconds" and "93 MB peak" are numbers I observed, not numbers
-I expect. Happy to walk through the working version.
+**The figures below are estimates.** They are derived from the data actually loaded — the real fixture
+feed and a generated sales sample at today's 100k-transaction volume — and scaled arithmetically to the
+1M/day forecast. So they are grounded in observed row counts, file sizes and compression ratios rather
+than plucked from the air, but they are projections, not benchmark results. Where a number would depend
+on a full production run, I say so rather than quoting one.
 
 ---
 
@@ -78,8 +80,9 @@ not a new script (D2). The client throttles proactively with a token bucket, hon
 (capped at 60s, so a hostile header cannot hang a job), and backs off with **full jitter** rather than
 plain exponential, because many shards retrying in lockstep is a herd.
 
-**Sales exports.** The platform caps files at 10,000 rows, so a day arrives as many files — measured
-**31 today, 304 at the 1M-transaction forecast**. Each is processed independently and idempotently.
+**Sales exports.** The platform caps files at 10,000 rows, so a day arrives as many files — **31 at
+today's volume, an estimated ~304 at the 1M-transaction forecast**. Each is processed independently and
+idempotently.
 
 ### Orchestration: Cloud Run Jobs + Workflows + Scheduler (D9)
 
@@ -184,28 +187,38 @@ features with a null target, which is exactly what a model scores into. Driving 
 silently drop every future date and leave the Data Science team with a training set and nothing to
 predict on. `has_sales_data` makes that explicit rather than leaving it to be inferred.
 
-Measured on the demo dataset: **372 rows = 12 stores × 31 dates; 168 with sales, 204 future.**
+On the loaded demo dataset the spine gives **372 rows = 12 stores × 31 dates; 168 with sales, 204 future.**
 
 ### The one modelling decision worth arguing about (D8)
 
-Which events affect which stores? The obvious approach — join on geography — is wrong, and the live
-data proves it:
+Which events affect which stores? The obvious approach — join on venue geography — is wrong, and four
+real fixtures from the loaded feed show why:
 
-| Fixture in the sample | Venue | UK relevance |
-|---|---|---|
-| Kairat Almaty vs Levski Sofia (Champions League) | Kazakhstan | **High** — midweek UK broadcast |
-| Cincinnati Bengals vs Detroit Lions (NFL) | United States | **Moderate** — UK broadcast |
-| Wolverhampton vs Blackburn (Championship) | England | **Moderate** |
-| Argentinian Primera C fixture | Argentina | **None** |
+| Fixture (from the loaded feed) | Venue | A geographic join says | Actually |
+|---|---|---|---|
+| Kairat Almaty vs Levski Sofia (Champions League) | Kazakhstan | no UK store affected | **every UK store** — midweek CL broadcast |
+| Cincinnati Bengals vs Detroit Lions (NFL) | United States | no UK store affected | **every UK store**, weakly — late-evening UK broadcast |
+| Wolverhampton vs Blackburn (Championship) | England | only stores near Wolverhampton | **every UK store**, moderately — the Championship is broadcast nationally |
+| CA Atlas vs Sacachispas (Argentinian Primera C) | Argentina | no UK store affected | correct — no UK audience ✓ |
 
-A geographic join gets three of four wrong. **Relevance follows broadcast reach, not venue
-location** — a commercial judgement, not something derivable from the feed. So it lives in a dbt
-**seed** an analyst can tune without a code change or a deployment, with `scope` (national or local)
-and a `weight` per competition. Containing the uncertainty in a reviewable artefact is the point;
-burying it in a `CASE` statement would hide the least certain and most influential part of the design.
+**Three of the four wrong, and in both directions**: geography misses two fixtures that reach every
+store in the estate, and over-narrows a third to a single catchment. Only the Argentine fixture comes
+out right, and only by accident — distance happens to coincide with irrelevance there.
+
+**Relevance follows broadcast reach, not venue location** — a commercial judgement, not something
+derivable from the feed. So it lives in a dbt **seed** an analyst can tune without a code change or a
+deployment, with `scope` (national or local) and a `weight` per competition. Containing the uncertainty
+in a reviewable artefact is the point; burying it in a `CASE` statement would hide the least certain and
+most influential part of the design.
 
 Honest limit: those weights are informed judgement, not fitted values. Once there's enough history
 the Data Science team should *learn* them — and this seed becomes the baseline they beat.
+
+**A second limit the table above exposes.** Weights are per *competition*, not per *tie*, so
+Kairat Almaty vs Levski Sofia carries the same 0.90 as a Real Madrid quarter-final would. That is
+plainly too blunt — the marquee ties are where most of the broadcast audience actually sits. A team-level
+override column in the same seed is the obvious refinement, but it multiplies the number of judgement
+calls an analyst has to defend, so v1 stays at competition level and says so.
 
 **Also honest:** kickoff time plausibly matters intraday — demand for an 8pm kickoff concentrates in
 the late afternoon. Day grain cannot see that. `earliest_kickoff_hour` preserves the signal, and
@@ -270,24 +283,29 @@ monitoring/alerting. The pipeline emits the numbers; nothing yet watches them.
 
 ---
 
-## 6. Scale — lead with the measured number
+## 6. Scale — lead with the numbers
 
-My first estimate was **4× too low**. I'd assumed ~120MB/day at 1M transactions; measured it's 533MB,
-because a transaction is a *basket* of ~3 line items, not one row. Corrected:
+The obvious first estimate is **4× too low**. Assuming ~120MB/day at 1M transactions treats a
+transaction as one row; it is a *basket* of ~3 line items, which the loaded sample makes plain.
+Corrected, with the right-hand column scaled from the sample:
 
-| | 100k txn/day (today) | 1M txn/day (12–18mo forecast) |
+| | 100k txn/day (today, loaded) | 1M txn/day (12–18mo forecast, estimated) |
 |---|---|---|
-| Line-item rows | 304,187 | **3,037,800** |
-| Files (10k-row cap) | 31 | **304** |
-| Raw CSV | 52 MB/day | **533 MB/day** |
-| Parquet + snappy | — | **92.7 MB/day** (5.8× smaller) |
+| Line-item rows | 304,187 | **~3.04 M** |
+| Files (10k-row cap) | 31 | **~304** |
+| Raw CSV | 52 MB/day | **~533 MB/day** |
+| Parquet + snappy | 9 MB/day | **~93 MB/day** (~5.8× smaller) |
 | Annual Parquet | — | ~34 GB |
 | Annual file count | — | **~111,000** |
-| Full day, one process, serial | — | **45.0s** (67,575 rows/sec) |
-| Peak memory, all 304 files | — | **93 MB, flat** |
 
-**This is not big data.** One process ingests the entire forecast peak day in 45 seconds using 93MB
-of RAM. Saying so is the mature answer; reaching for Spark here would be a red flag.
+The left-hand column is what the generated sample actually produced; the right is that scaled by ten.
+The compression ratio carries across because the column types don't change with volume.
+
+**This is not big data.** A single process reading CSV in batches should absorb the forecast peak day
+in around a minute, in flat tens of MB of RAM — the design streams rather than materialising, so memory
+is a function of batch size, not file count (D13). Saying so is the mature answer; reaching for Spark
+here would be a red flag. Those throughput and memory figures are the design's intent and would need a
+production run to confirm.
 
 What *actually* breaks at 10× is **file count**, not volume:
 
@@ -328,9 +346,9 @@ declining to pay for a managed Airflow control plane to run one daily job.
 
 ## 8. Testing
 
-**129 unit tests in under a second, no network and no cloud, plus 50 dbt data tests** — measured on the
-working version. `tests/test_pipeline.py` presents them as a specification: each stub names the failure it
-prevents. Full methodology in [`docs/testing.md`](docs/testing.md).
+**48 unit-test specifications, no network and no cloud, plus 50 dbt data tests.**
+`tests/test_pipeline.py` presents the suite as a specification: each stub names the failure it prevents.
+The 50 dbt tests are real and runnable. Full methodology in [`docs/testing.md`](docs/testing.md).
 
 The structural choice that makes this possible: **`pipeline/` has no orchestrator dependency at all**
 (D14). Workflows and Cloud Run call into `cli.py`; nothing in the package calls back out. So the suite
@@ -373,8 +391,8 @@ Worth listing, because "did your tests catch anything?" deserves a concrete answ
 
 ## 9. Assumptions
 
-- **"Transactions" are baskets**, so a day's export is line items — measured ~3.04 lines per basket.
-  The brief's 100,000/day therefore means ~304,000 rows/day.
+- **"Transactions" are baskets**, so a day's export is line items — ~3.04 lines per basket in the
+  loaded sample. The brief's 100,000/day therefore means ~304,000 rows/day.
 - **The combined table means one wide, denormalised, ML-ready table.** I deliver that *and* the star
   schema behind it, so the choice constrains nobody.
 - **The dashboard and the model are downstream of me.** My deliverable ends at a trustworthy table.
@@ -396,14 +414,15 @@ Worth listing, because "did your tests catch anything?" deserves a concrete answ
   cap, realistic PII to strip, and optional malformed rows.
 - **The uplift in the demo data is injected, not discovered.** `tools/generate_sales_csv.py` boosts
   pizza demand on real fixture dates and writes a **ground-truth manifest** recording exactly what it
-  injected. The observed +19% lift says nothing about consumer behaviour. It's here as an *end-to-end
-  assertion*: the features landed on precisely the right dates, so the relevance join and date
-  alignment are demonstrably correct. Validating a real relationship needs real transaction data —
-  the Data Science team's job.
+  injected. Any lift the mart shows is an *input*, not a finding, and says nothing about consumer
+  behaviour. It is there as a *correctness assertion*: the manifest states which dates were boosted, so
+  the mart must show elevated demand on exactly those dates and no others — which is what would
+  demonstrate the relevance join and date alignment are right. Validating a real relationship needs real
+  transaction data — the Data Science team's job.
 - **DuckDB stands in locally for BigQuery, and the GCP path is undeployed.** Same dbt models, same
-  SQL, zero cloud setup so a reviewer can run it instantly. But the adapters absorb most dialect
-  difference, not all, and I have not run this against a live BigQuery — so "one config change" is
-  the design intent rather than a demonstrated fact.
+  SQL, no cloud setup needed to review them. But the adapters absorb most dialect difference, not all,
+  and none of this has been run against a live BigQuery — so "one config change" is the design intent
+  rather than a demonstrated fact.
 - **Pagination is unit-tested, not live-exercised.** The free endpoints don't paginate; cursor paging
   isn't built because no source needs it.
 - **Full rebuild, not incremental.** Simple and idempotent at these volumes. Incremental models are
@@ -444,8 +463,9 @@ Stated plainly, because pretending otherwise is worse:
 - **Day grain can't see intraday demand shifts**, which is probably where real forecasting value sits.
 - **The sports feed is a free tier** that truncates results, so the events side has never been
   exercised at realistic breadth.
-- **The GCP path is written but not deployed.** The pipeline runs end to end locally against DuckDB;
-  GCS, BigLake and BigQuery are implemented and reviewable but have not been executed against a live
-  project. "One config change" is the design intent, not a demonstrated fact.
+- **Nothing here has been run in anger.** `pipeline/` is pseudocode by design, and the GCP path is
+  written but not deployed. The local DuckDB target exists so the design *can* be exercised without a
+  cloud account, but GCS, BigLake and BigQuery are reviewable rather than executed. "One config change"
+  is the design intent, not a demonstrated fact.
 - **The Airflow alternative is pseudocode.** Cloud Workflows is the orchestrator I would run and the
   one that is actually written; the DAG sketch shows the mapping, not a tested artefact.

@@ -1,8 +1,8 @@
 """The cloud boundary: where bytes live. Nothing else knows laptop from GCS.
 
 Storage location is the only genuinely cloud-specific concern in the ingestion path, so confining it
-to one small interface means the pipeline runs end to end with no cloud account — and the production
-path is a config value away (DECISIONS.md D15).
+to one small interface means the pipeline carries no hard dependency on a cloud account — and the
+production path is a config value away (DECISIONS.md D15).
 
 The interface is deliberately tiny: four methods a filesystem and an object store can both honour
 cheaply. Anything richer (renames, appends, directory semantics) would leak a filesystem assumption

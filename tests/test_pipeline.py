@@ -5,9 +5,8 @@ One file rather than seven, because with implementation presented as pseudocode 
 prevents — which is the whole methodology: a test whose purpose is not obvious is a test that gets
 deleted during the next refactor.
 
-The reference implementation (built and run before this was reduced to pseudocode) carries these as 129
-real passing tests. See docs/testing.md for the methodology, the layers, and what is deliberately NOT
-tested.
+48 specifications here, alongside 50 real and runnable dbt data tests. See docs/testing.md for the
+methodology, the layers, and what is deliberately NOT tested.
 
 Why no mocking framework is needed anywhere below: every external dependency is injected — the clock
 and sleep into the rate limiter, the HTTP session into the client, storage behind a protocol, the

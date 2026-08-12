@@ -6,8 +6,8 @@ generator's job is to reproduce the *engineering* problem faithfully:
 
   * **The 10,000-row export cap.** The platform truncates every file at 10,000 rows, so a day arrives
     as MANY files, not one. That single constraint is what makes file count the real scaling pressure
-    (DECISIONS.md D10), and it must be reproduced exactly. Measured: 31 files/day at the brief's current
-    100,000 transactions, 304 at the 1M forecast.
+    (DECISIONS.md D10), and it must be reproduced exactly. That is 31 files/day at the brief's current
+    100,000 transactions, an estimated ~304 at the 1M forecast.
   * **Realistic PII** — email, loyalty id, full postcode, card last-4 — so the privacy layer has
     something genuine to strip. A generator emitting only clean columns would let the privacy design go
     untested.
@@ -24,13 +24,13 @@ rather than pure noise.
 To keep that honest rather than hidden, every run writes a **ground-truth manifest** recording exactly
 which uplift was applied to which date. Two consequences worth stating:
 
-  1. Any observed lift is an INPUT, not a finding. Validating a real relationship needs real transaction
-     data, and that is the Data Science team's job, not this pipeline's.
-  2. Because the uplift is aligned to the REAL ingested fixture dates, it doubles as an **end-to-end
-     assertion**: the mart should show elevated demand on exactly those dates and no others. If it does,
-     the relevance join and the date alignment are demonstrably correct.
+  1. Any lift the mart shows is an INPUT, not a finding. Validating a real relationship needs real
+     transaction data, and that is the Data Science team's job, not this pipeline's.
+  2. Because the uplift is aligned to the REAL fixture dates, it doubles as a **correctness assertion**:
+     the mart should show elevated demand on exactly those dates and no others. If it does, the
+     relevance join and the date alignment are right.
 
-NOTE ON FORM: pseudocode. The reference implementation is a working script.
+NOTE ON FORM: pseudocode, like the rest of `pipeline/`.
 
     python tools/generate_sales_csv.py --start 2026-08-01 --end 2026-08-14 \
         --transactions-per-day 100000 --out-dir data/landing --uplift-json data/uplift.json
@@ -88,11 +88,11 @@ def generate(
                 if rng < pizza_chance:  add 1-2 lines from PIZZA_PRODUCTS
 
                 add 1-5 filler lines from OTHER_PRODUCTS
-                    # ***NOT from all products.*** Drawing filler from a pool that INCLUDED pizza put
-                    # pizza into ~37% of filler lines — a second path into the basket that the uplift
-                    # never touches. It diluted a 21-54% injected uplift down to an observed 2.8% and
-                    # pushed the attach rate to an implausible 1.5 per basket. Every test still passed;
-                    # only looking at the numbers found it.
+                    # ***NOT from all products.*** Drawing filler from a pool that INCLUDED pizza would
+                    # put pizza into ~37% of filler lines — a second path into the basket that the
+                    # uplift never touches. That dilutes a 21-54% injected uplift to low single digits
+                    # and pushes the attach rate to an implausible 1.5 per basket, while every test
+                    # still passes. Only looking at the numbers catches it.
 
                 kickoff-aware purchase hour on event days (people buy before an evening kickoff), so
                 the earliest_kickoff_hour feature is not meaningless

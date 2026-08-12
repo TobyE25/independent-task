@@ -110,8 +110,8 @@ gcloud run jobs create pizza-perfect-ingest-sports $COMMON \
     --tasks=1 --task-timeout=30m --max-retries=2
 
 # Sales: 8 parallel tasks. This is the Cloud Run equivalent of Airflow's dynamic task mapping —
-# each container reads CLOUD_RUN_TASK_INDEX and takes every 8th export (D10). Measured: 304 files
-# and 3M rows at the forecast peak, 45s single-threaded, so 8 shards is comfortable headroom.
+# each container reads CLOUD_RUN_TASK_INDEX and takes every 8th export (D10). Estimated ~304 files
+# and ~3M rows at the forecast peak, so 8 shards is comfortable headroom.
 gcloud run jobs create pizza-perfect-ingest-sales $COMMON \
     --service-account=pp-ingest-sales@$PROJECT.iam.gserviceaccount.com \
     --set-secrets=PSEUDONYM_HMAC_KEY=pizza-perfect-pseudonym-key:latest \
@@ -130,8 +130,9 @@ gcloud run jobs create pizza-perfect-reconcile $COMMON \
     --args=reconcile
 ```
 
-512Mi on the sales job against a **measured 93MB peak** — the memory stays flat regardless of file
-count because the CSV is read in batches, so this is generous rather than guesswork.
+512Mi on the sales job is deliberate headroom: the CSV is read in batches (D13), so memory is a function
+of batch size rather than file count and should stay flat in the tens of MB. The exact ceiling wants
+confirming on a real run before anyone tightens it.
 
 ## 6. Orchestrate and schedule
 
