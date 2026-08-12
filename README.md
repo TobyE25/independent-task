@@ -27,12 +27,6 @@ code, Sudo code, Diagrams, UML"*. So:
 | `tests/test_pipeline.py` | Specification                        | Each stub names the failure it prevents                                                                                                                                                                                                    |
 | `deploy/`                | Real config + commands               | Cloud Workflows definition and the`gcloud` sequence                                                                                                                                                                                      |
 
-**Where the numbers come from.** I built and ran the whole thing before reducing it to this form, which
-is why the figures quoted in `DESIGN.md` are measurements rather than estimates — 3,037,800 rows in 304
-files, 45.0 seconds, 93 MB peak memory, 5.8× Parquet compression, 129 passing unit tests, 60/60 dbt
-nodes. Presenting implementation as pseudocode keeps the submission readable; it does not mean the
-design is untested. Happy to walk through the working version.
-
 ---
 
 ## Where to look
