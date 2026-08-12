@@ -1,0 +1,13 @@
+store_id,store_name,city,region,nation,postcode_district
+STO-001,Sprouts Camden,London,London,England,NW1
+STO-002,Sprouts Islington,London,London,England,N1
+STO-003,Sprouts Brixton,London,London,England,SW9
+STO-004,Sprouts Manchester Piccadilly,Manchester,North West,England,M1
+STO-005,Sprouts Salford,Salford,North West,England,M50
+STO-006,Sprouts Birmingham Bullring,Birmingham,West Midlands,England,B5
+STO-007,Sprouts Leeds Central,Leeds,Yorkshire,England,LS1
+STO-008,Sprouts Newcastle Quayside,Newcastle,North East,England,NE1
+STO-009,Sprouts Bristol Harbourside,Bristol,South West,England,BS1
+STO-010,Sprouts Glasgow Merchant City,Glasgow,Scotland,Scotland,G1
+STO-011,Sprouts Cardiff Bay,Cardiff,Wales,Wales,CF10
+STO-012,Sprouts Belfast Titanic,Belfast,Northern Ireland,Northern Ireland,BT1

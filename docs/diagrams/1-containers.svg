@@ -1,0 +1,145 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 900" width="1180" height="900" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0.5 L9,5 L0,9.5 z" fill="#52525b"/>
+    </marker>
+    <marker id="cR" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0.5 L9,5 L0,9.5 z" fill="#b91c1c"/>
+    </marker>
+  </defs>
+  <rect width="1180" height="900" fill="#ffffff"/>
+
+  <!-- external -->
+  <text x="30" y="26" font-size="12" font-weight="700" fill="#71717a" letter-spacing="1.1">EXTERNAL SOURCES</text>
+  <rect x="30" y="38" width="380" height="80" rx="8" fill="#fafafa" stroke="#a1a1aa" stroke-width="1.5"/>
+  <text x="48" y="62" font-size="14" font-weight="600" fill="#18181b">Sports Events API</text>
+  <text x="48" y="84" font-size="12" fill="#52525b">rate-limited, ~30 req/min · paged</text>
+  <text x="48" y="104" font-size="12" fill="#52525b">throttled, retried, key redacted in logs</text>
+
+  <rect x="450" y="38" width="380" height="80" rx="8" fill="#fafafa" stroke="#a1a1aa" stroke-width="1.5"/>
+  <text x="468" y="62" font-size="14" font-weight="600" fill="#18181b">Ecommerce platform</text>
+  <text x="468" y="84" font-size="12" fill="#52525b">daily CSV export, arrives 05:00–08:00</text>
+  <text x="468" y="104" font-size="12" fill="#52525b">max 10,000 rows per file → many files</text>
+
+  <path d="M220,118 L220,150" fill="none" stroke="#52525b" stroke-width="1.8" marker-end="url(#c)"/>
+  <path d="M640,118 L640,150" fill="none" stroke="#52525b" stroke-width="1.8" marker-end="url(#c)"/>
+
+  <!-- RED ZONE -->
+  <rect x="30" y="156" width="800" height="150" rx="10" fill="#fef2f2" stroke="#b91c1c" stroke-width="2.5"/>
+  <circle cx="52" cy="182" r="7" fill="#b91c1c"/>
+  <text x="68" y="187" font-size="13" font-weight="700" fill="#7f1d1d">PERSONAL DATA ZONE</text>
+  <text x="238" y="187" font-size="11.5" fill="#b91c1c">30-day lifecycle deletion · restricted IAM · no delete rights for the pipeline</text>
+
+  <rect x="52" y="202" width="360" height="88" rx="7" fill="#ffffff" stroke="#fca5a5" stroke-width="1.5"/>
+  <text x="68" y="226" font-size="13" font-weight="600" fill="#18181b">GCS · bronze</text>
+  <text x="68" y="248" font-size="11.5" fill="#52525b">immutable JSONL.gz — API payloads,</text>
+  <text x="68" y="266" font-size="11.5" fill="#52525b">byte-for-byte, unvalidated</text>
+  <text x="68" y="284" font-size="11" fill="#a1a1aa">replayable, so a bug never re-hits the API</text>
+
+  <rect x="448" y="202" width="360" height="88" rx="7" fill="#ffffff" stroke="#fca5a5" stroke-width="1.5"/>
+  <text x="464" y="226" font-size="13" font-weight="600" fill="#18181b">GCS · landing bucket</text>
+  <text x="464" y="248" font-size="11.5" fill="#52525b">CSV exactly as delivered</text>
+  <text x="464" y="268" font-size="11.5" font-weight="600" fill="#b91c1c">email · card last-4 · full postcode</text>
+  <text x="464" y="286" font-size="11" fill="#a1a1aa">read-only to the pipeline</text>
+
+  <path d="M232,306 L232,340" fill="none" stroke="#b91c1c" stroke-width="1.8" marker-end="url(#cR)"/>
+  <path d="M628,306 L628,340" fill="none" stroke="#b91c1c" stroke-width="1.8" marker-end="url(#cR)"/>
+
+  <!-- PRIVACY BOUNDARY -->
+  <rect x="30" y="346" width="800" height="92" rx="10" fill="#18181b" stroke="#18181b" stroke-width="2"/>
+  <text x="430" y="376" font-size="15" font-weight="700" fill="#ffffff" text-anchor="middle" letter-spacing="2.5">PRIVACY BOUNDARY</text>
+  <text x="430" y="400" font-size="12.5" fill="#e4e4e7" text-anchor="middle">DROP  ·  HMAC-SHA256 pseudonymise  ·  GENERALISE</text>
+  <text x="430" y="422" font-size="11" fill="#a1a1aa" text-anchor="middle">pipeline/privacy.py — a declarative field policy, auditable in one sitting</text>
+
+  <!-- secret manager -->
+  <rect x="880" y="356" width="270" height="72" rx="8" fill="#fffbeb" stroke="#d97706" stroke-width="1.8"/>
+  <text x="898" y="380" font-size="13" font-weight="600" fill="#78350f">Secret Manager</text>
+  <text x="898" y="400" font-size="11.5" fill="#92400e">the HMAC key, mounted at runtime</text>
+  <text x="898" y="418" font-size="11" fill="#b45309">never in an image, never in a file</text>
+  <path d="M876,392 L836,392" fill="none" stroke="#d97706" stroke-width="1.8" stroke-dasharray="5 3" marker-end="url(#c)"/>
+
+  <path d="M300,438 L300,472" fill="none" stroke="#52525b" stroke-width="1.8" marker-end="url(#c)"/>
+  <path d="M700,438 L700,460 L940,460 L940,492" fill="none" stroke="#52525b" stroke-width="1.6" stroke-dasharray="5 3" marker-end="url(#c)"/>
+  <text x="712" y="454" font-size="10.5" fill="#71717a">invalid rows, post-pseudonymisation</text>
+
+  <!-- AMBER ZONE -->
+  <rect x="30" y="478" width="620" height="150" rx="10" fill="#fffbeb" stroke="#b45309" stroke-width="2.5"/>
+  <circle cx="52" cy="504" r="7" fill="#d97706"/>
+  <text x="68" y="509" font-size="13" font-weight="700" fill="#78350f">PSEUDONYMISED</text>
+  <text x="205" y="509" font-size="11.5" fill="#b45309">no direct identifiers remain</text>
+
+  <rect x="52" y="524" width="270" height="88" rx="7" fill="#ffffff" stroke="#fcd34d" stroke-width="1.5"/>
+  <text x="68" y="548" font-size="13" font-weight="600" fill="#18181b">GCS · silver</text>
+  <text x="68" y="570" font-size="11.5" fill="#52525b">Parquet + snappy</text>
+  <text x="68" y="588" font-size="11.5" fill="#52525b">Hive-partitioned by date</text>
+  <text x="68" y="606" font-size="11" fill="#a1a1aa">5.8× smaller than the CSV</text>
+
+  <rect x="352" y="524" width="278" height="88" rx="7" fill="#ffffff" stroke="#fcd34d" stroke-width="1.5"/>
+  <text x="368" y="548" font-size="13" font-weight="600" fill="#18181b">BigLake external tables</text>
+  <text x="368" y="570" font-size="11.5" font-weight="600" fill="#b45309">no copy of the data</text>
+  <text x="368" y="590" font-size="11.5" fill="#52525b">BigQuery queries the Parquet</text>
+  <text x="368" y="608" font-size="11.5" fill="#52525b">in place, partitions pruned</text>
+
+  <path d="M330,568 L348,568" fill="none" stroke="#52525b" stroke-width="1.8" marker-end="url(#c)"/>
+
+  <!-- quarantine -->
+  <rect x="820" y="492" width="330" height="104" rx="8" fill="#fafafa" stroke="#a1a1aa" stroke-width="1.5"/>
+  <text x="838" y="516" font-size="13" font-weight="600" fill="#18181b">GCS · quarantine</text>
+  <text x="838" y="538" font-size="11.5" fill="#52525b">rejected rows + <tspan font-weight="600">the reason</tspan> each failed</text>
+  <text x="838" y="558" font-size="11.5" fill="#52525b">never dropped, never fatal to the run</text>
+  <text x="838" y="578" font-size="11" fill="#a1a1aa">the rate is a monitored metric: 0.1% is noise,</text>
+  <text x="838" y="592" font-size="11" fill="#a1a1aa">40% is an upstream schema change</text>
+
+  <path d="M340,628 L340,662" fill="none" stroke="#52525b" stroke-width="1.8" marker-end="url(#c)"/>
+
+  <!-- GREEN ZONE -->
+  <rect x="30" y="668" width="800" height="186" rx="10" fill="#f0fdf4" stroke="#15803d" stroke-width="2.5"/>
+  <circle cx="52" cy="694" r="7" fill="#16a34a"/>
+  <text x="68" y="699" font-size="13" font-weight="700" fill="#14532d">AGGREGATE</text>
+  <text x="168" y="699" font-size="11.5" fill="#15803d">no personal data at all — guaranteed by the grain, enforced by a dbt test</text>
+
+  <rect x="52" y="714" width="200" height="56" rx="7" fill="#ffffff" stroke="#86efac" stroke-width="1.5"/>
+  <text x="68" y="736" font-size="12.5" font-weight="600" fill="#18181b">dbt staging</text>
+  <text x="68" y="756" font-size="11" fill="#52525b">views · rename, cast, flag</text>
+
+  <rect x="282" y="714" width="248" height="56" rx="7" fill="#ffffff" stroke="#86efac" stroke-width="1.5"/>
+  <text x="298" y="736" font-size="12.5" font-weight="600" fill="#18181b">dbt marts</text>
+  <text x="298" y="756" font-size="10.5" fill="#52525b">dim_store · dim_date · dim_event</text>
+
+  <rect x="560" y="714" width="248" height="56" rx="7" fill="#ffffff" stroke="#86efac" stroke-width="1.5"/>
+  <text x="576" y="736" font-size="12.5" font-weight="600" fill="#18181b">fct_sales_daily</text>
+  <text x="576" y="756" font-size="10.5" fill="#15803d">last personal data disappears here</text>
+
+  <rect x="52" y="786" width="756" height="52" rx="7" fill="#dcfce7" stroke="#15803d" stroke-width="2.5"/>
+  <text x="70" y="808" font-size="14" font-weight="700" fill="#14532d">mart_pizza_demand_daily</text>
+  <text x="290" y="808" font-size="12" fill="#166534">— THE COMBINED TABLE · native BigQuery · one row per store × day</text>
+  <text x="70" y="828" font-size="11" fill="#15803d">the only thing copied into the warehouse: small, and hit constantly by a dashboard</text>
+
+  <path d="M256,742 L278,742" fill="none" stroke="#52525b" stroke-width="1.6" marker-end="url(#c)"/>
+  <path d="M534,742 L556,742" fill="none" stroke="#52525b" stroke-width="1.6" marker-end="url(#c)"/>
+  <path d="M684,770 L684,782" fill="none" stroke="#52525b" stroke-width="1.6" marker-end="url(#c)"/>
+
+  <!-- consumers -->
+  <rect x="880" y="714" width="270" height="52" rx="7" fill="#f4f4f5" stroke="#a1a1aa" stroke-width="1.5"/>
+  <text x="898" y="736" font-size="12.5" font-weight="600" fill="#18181b">Data Science</text>
+  <text x="898" y="754" font-size="11" fill="#52525b">demand model</text>
+
+  <rect x="880" y="786" width="270" height="52" rx="7" fill="#f4f4f5" stroke="#a1a1aa" stroke-width="1.5"/>
+  <text x="898" y="808" font-size="12.5" font-weight="600" fill="#18181b">Analytics dashboard</text>
+  <text x="898" y="826" font-size="11" fill="#52525b">buyers, store managers</text>
+
+  <path d="M812,812 L840,812 L840,740 L876,740" fill="none" stroke="#52525b" stroke-width="1.6" marker-end="url(#c)"/>
+  <path d="M812,812 L876,812" fill="none" stroke="#52525b" stroke-width="1.6" marker-end="url(#c)"/>
+
+  <!-- orchestration strip -->
+  <rect x="880" y="156" width="270" height="182" rx="8" fill="#f5f3ff" stroke="#6d28d9" stroke-width="1.8"/>
+  <text x="898" y="180" font-size="13" font-weight="700" fill="#4c1d95">ORCHESTRATION</text>
+  <text x="898" y="202" font-size="11.5" fill="#5b21b6">Cloud Workflows + Scheduler</text>
+  <text x="898" y="220" font-size="11.5" fill="#5b21b6">08:15 Europe/London</text>
+  <line x1="898" y1="232" x2="1132" y2="232" stroke="#ddd6fe" stroke-width="1.5"/>
+  <text x="898" y="252" font-size="11" fill="#52525b">five Cloud Run Jobs:</text>
+  <text x="898" y="270" font-size="11" fill="#52525b">· ingest-sports</text>
+  <text x="898" y="286" font-size="11" fill="#52525b">· ingest-sales  ×8 shards</text>
+  <text x="898" y="302" font-size="11" fill="#52525b">· register  · dbt  · reconcile</text>
+  <text x="898" y="326" font-size="10.5" fill="#7c3aed">~£1–5/mo vs ~£250–350 for Composer</text>
+</svg>

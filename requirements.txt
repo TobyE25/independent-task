@@ -1,0 +1,29 @@
+# Runtime dependencies for the `pipeline` package.
+#
+# Note what is NOT here: Apache Airflow. The pipeline package deliberately has no
+# dependency on the orchestrator (see DECISIONS.md D14) — the DAG is thin glue over
+# these modules. That split is what lets the whole test suite run in seconds without a
+# scheduler, and what makes "you could run this on Cloud Run Jobs instead of Composer"
+# (D9) a real option rather than a claim.
+#
+# Install:  pip install -r requirements.txt
+
+# --- Ingestion ---
+requests>=2.31          # HTTP client for the sports events API
+pydantic>=2.6           # schema contract at the ingestion boundary (fail closed)
+
+# --- Columnar storage ---
+pyarrow>=15.0           # streaming CSV reader + Parquet writer, bounded memory (D13)
+
+# --- Local warehouse target ---
+duckdb>=1.0             # stands in for BigQuery so the pipeline runs with no cloud account
+dbt-core>=1.8
+dbt-duckdb>=1.8
+
+# --- Google Cloud target ---
+# Only needed when TARGET=gcp. Kept in the main manifest rather than an extra because
+# the GCP path is the intended production target, not an optional add-on.
+google-cloud-storage>=2.16
+google-cloud-bigquery>=3.20
+google-cloud-secret-manager>=2.20
+dbt-bigquery>=1.8

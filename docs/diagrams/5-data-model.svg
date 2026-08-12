@@ -1,0 +1,158 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 840" width="1180" height="840" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="e" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0.5 L9,5 L0,9.5 z" fill="#52525b"/>
+    </marker>
+  </defs>
+  <rect width="1180" height="840" fill="#ffffff"/>
+  <style>
+    .tbl  { font-size: 13px; font-weight: 700; fill: #ffffff; }
+    .fld  { font-size: 11px; fill: #27272a; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .typ  { font-size: 10px; fill: #a1a1aa; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .key  { font-size: 9.5px; font-weight: 700; fill: #1d4ed8; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .note { font-size: 10px; fill: #71717a; font-style: italic; }
+    .card { font-size: 10.5px; font-weight: 700; fill: #52525b; }
+  </style>
+
+  <!-- ============ dim_store ============ -->
+  <rect x="20" y="30" width="250" height="150" rx="7" fill="#ffffff" stroke="#71717a" stroke-width="1.6"/>
+  <path d="M20,37 a7,7 0 0 1 7,-7 h236 a7,7 0 0 1 7,7 v21 h-250 z" fill="#52525b"/>
+  <text x="34" y="52" class="tbl">dim_store</text>
+  <text x="34" y="78" class="key">PK</text><text x="58" y="78" class="fld">store_id</text><text x="200" y="78" class="typ">string</text>
+  <text x="58" y="96" class="fld">store_name</text><text x="200" y="96" class="typ">string</text>
+  <text x="58" y="114" class="fld">region</text><text x="200" y="114" class="typ">string</text>
+  <text x="58" y="132" class="fld">nation</text><text x="200" y="132" class="typ">string</text>
+  <text x="58" y="148" class="note">drives LOCAL relevance</text>
+  <text x="58" y="168" class="fld">postcode_district</text>
+
+  <!-- ============ dim_date ============ -->
+  <rect x="320" y="30" width="250" height="150" rx="7" fill="#ffffff" stroke="#71717a" stroke-width="1.6"/>
+  <path d="M320,37 a7,7 0 0 1 7,-7 h236 a7,7 0 0 1 7,7 v21 h-250 z" fill="#52525b"/>
+  <text x="334" y="52" class="tbl">dim_date</text>
+  <text x="334" y="78" class="key">PK</text><text x="358" y="78" class="fld">date_day</text><text x="510" y="78" class="typ">date</text>
+  <text x="358" y="96" class="fld">iso_day_of_week</text><text x="530" y="96" class="typ">int</text>
+  <text x="358" y="112" class="note">1=Mon .. 7=Sun, spelled out —</text>
+  <text x="358" y="126" class="note">dow numbering differs between engines</text>
+  <text x="358" y="148" class="fld">is_weekend</text><text x="520" y="148" class="typ">bool</text>
+  <text x="358" y="168" class="fld">month</text><text x="530" y="168" class="typ">int</text>
+
+  <!-- ============ dim_event ============ -->
+  <rect x="20" y="380" width="250" height="196" rx="7" fill="#ffffff" stroke="#71717a" stroke-width="1.6"/>
+  <path d="M20,387 a7,7 0 0 1 7,-7 h236 a7,7 0 0 1 7,7 v21 h-250 z" fill="#52525b"/>
+  <text x="34" y="402" class="tbl">dim_event</text>
+  <text x="34" y="428" class="key">PK</text><text x="58" y="428" class="fld">event_id</text><text x="205" y="428" class="typ">string</text>
+  <text x="34" y="446" class="key">FK</text><text x="58" y="446" class="fld">league_name</text><text x="205" y="446" class="typ">string</text>
+  <text x="58" y="462" class="note">joins the relevance rules</text>
+  <text x="58" y="482" class="fld">event_date</text><text x="215" y="482" class="typ">date</text>
+  <text x="58" y="500" class="fld">kickoff_hour</text><text x="222" y="500" class="typ">int</text>
+  <text x="58" y="518" class="fld">country</text><text x="205" y="518" class="typ">string</text>
+  <text x="58" y="534" class="note">the VENUE, not the audience</text>
+  <text x="58" y="554" class="fld">is_postponed</text><text x="215" y="554" class="typ">bool</text>
+  <text x="58" y="570" class="note">kept here, excluded from the bridge</text>
+
+  <!-- ============ seed rules ============ -->
+  <rect x="20" y="632" width="250" height="176" rx="7" fill="#fffbeb" stroke="#b45309" stroke-width="2"/>
+  <path d="M20,639 a7,7 0 0 1 7,-7 h236 a7,7 0 0 1 7,7 v21 h-250 z" fill="#b45309"/>
+  <text x="34" y="654" class="tbl">seed_event_relevance_rules</text>
+  <text x="34" y="680" class="key">PK</text><text x="58" y="680" class="fld">league_name</text>
+  <text x="58" y="698" class="fld">scope</text><text x="150" y="698" class="typ">national|local</text>
+  <text x="58" y="716" class="fld">applies_to_nation</text>
+  <text x="58" y="734" class="fld">weight</text><text x="150" y="734" class="typ">decimal</text>
+  <text x="58" y="752" class="fld">rationale</text><text x="150" y="752" class="typ">string</text>
+  <rect x="34" y="764" width="222" height="34" rx="5" fill="#fef3c7"/>
+  <text x="44" y="778" font-size="10" font-weight="700" fill="#78350f">A DBT SEED — an analyst tunes it</text>
+  <text x="44" y="791" font-size="10" font-weight="700" fill="#78350f">without a code change or a deploy</text>
+
+  <!-- ============ bridge ============ -->
+  <rect x="320" y="420" width="250" height="150" rx="7" fill="#f5f3ff" stroke="#6d28d9" stroke-width="2"/>
+  <path d="M320,427 a7,7 0 0 1 7,-7 h236 a7,7 0 0 1 7,7 v21 h-250 z" fill="#6d28d9"/>
+  <text x="334" y="442" class="tbl">event_store_relevance</text>
+  <text x="334" y="466" font-size="9.5" font-weight="700" fill="#6d28d9">— THE BRIDGE —</text>
+  <text x="334" y="490" class="key">FK</text><text x="358" y="490" class="fld">event_id</text>
+  <text x="334" y="508" class="key">FK</text><text x="358" y="508" class="fld">store_id</text>
+  <text x="358" y="526" class="fld">scope</text>
+  <text x="358" y="544" class="fld">weight</text>
+  <text x="358" y="562" class="fld">kickoff_hour</text>
+
+  <!-- ============ fct_sales_daily ============ -->
+  <rect x="640" y="380" width="270" height="230" rx="7" fill="#f0fdf4" stroke="#15803d" stroke-width="2"/>
+  <path d="M640,387 a7,7 0 0 1 7,-7 h256 a7,7 0 0 1 7,7 v21 h-270 z" fill="#15803d"/>
+  <text x="654" y="402" class="tbl">fct_sales_daily</text>
+  <text x="654" y="428" class="key">FK</text><text x="678" y="428" class="fld">store_id</text>
+  <text x="654" y="446" class="key">FK</text><text x="678" y="446" class="fld">date_day</text>
+  <text x="678" y="466" class="fld">baskets</text><text x="850" y="466" class="typ">int</text>
+  <text x="678" y="484" class="fld">pizza_units</text><text x="850" y="484" class="typ">int</text>
+  <text x="678" y="502" class="fld">pizza_baskets</text><text x="850" y="502" class="typ">int</text>
+  <text x="678" y="520" class="fld">pizza_revenue_gbp</text><text x="840" y="520" class="typ">dec</text>
+  <text x="678" y="538" class="fld">total_revenue_gbp</text><text x="840" y="538" class="typ">dec</text>
+  <text x="678" y="556" class="fld">distinct_customers</text><text x="850" y="556" class="typ">int</text>
+  <text x="678" y="571" class="note">countable only because hashing</text>
+  <text x="678" y="583" class="note">is deterministic</text>
+  <rect x="654" y="590" width="242" height="14" rx="3" fill="#dcfce7"/>
+  <text x="660" y="601" font-size="9.5" font-weight="700" fill="#14532d">where the last personal data disappears</text>
+
+  <!-- ============ THE MART ============ -->
+  <rect x="640" y="30" width="380" height="300" rx="8" fill="#eff6ff" stroke="#1d4ed8" stroke-width="3"/>
+  <path d="M640,38 a8,8 0 0 1 8,-8 h364 a8,8 0 0 1 8,8 v22 h-380 z" fill="#1d4ed8"/>
+  <text x="656" y="54" class="tbl">mart_pizza_demand_daily</text>
+  <text x="1006" y="54" font-size="10" font-weight="700" fill="#bfdbfe" text-anchor="end">THE DELIVERABLE</text>
+
+  <text x="656" y="82" class="key">PK</text><text x="680" y="82" class="fld">store_id</text><text x="960" y="82" class="typ">string</text>
+  <text x="656" y="100" class="key">PK</text><text x="680" y="100" class="fld">date_day</text><text x="965" y="100" class="typ">date</text>
+  <line x1="656" y1="112" x2="1004" y2="112" stroke="#93c5fd" stroke-width="1.2"/>
+
+  <text x="656" y="130" font-size="9.5" font-weight="700" fill="#1d4ed8">EVENT FEATURES</text>
+  <text x="680" y="150" class="fld">relevant_event_count</text><text x="975" y="150" class="typ">int</text>
+  <text x="680" y="168" class="fld">max_event_weight</text><text x="970" y="168" class="typ">dec</text>
+  <text x="680" y="186" class="fld">has_national_broadcast</text><text x="965" y="186" class="typ">bool</text>
+  <text x="680" y="204" class="fld">earliest_kickoff_hour</text><text x="975" y="204" class="typ">int</text>
+  <line x1="656" y1="216" x2="1004" y2="216" stroke="#93c5fd" stroke-width="1.2"/>
+
+  <text x="656" y="234" font-size="9.5" font-weight="700" fill="#1d4ed8">TARGET AND MEASURES</text>
+  <text x="680" y="254" class="fld">pizza_units</text><text x="975" y="254" class="typ">int</text>
+  <text x="680" y="270" class="note">NULL for future dates — a forecast needs rows to</text>
+  <text x="680" y="282" class="note">SCORE into, not only rows to train on</text>
+  <text x="680" y="302" class="fld">baskets</text><text x="975" y="302" class="typ">int</text>
+  <text x="680" y="320" class="fld">has_sales_data</text><text x="965" y="320" class="typ">bool</text>
+
+  <!-- ============ relationships ============ -->
+  <!-- dim_store -> mart -->
+  <path d="M270,70 L300,70 L300,14 L830,14 L830,26" fill="none" stroke="#52525b" stroke-width="1.5" marker-end="url(#e)"/>
+  <text x="540" y="10" class="card">1 .. *</text>
+  <!-- dim_date -> mart -->
+  <path d="M570,80 L604,80 L604,60 L636,60" fill="none" stroke="#52525b" stroke-width="1.5" marker-end="url(#e)"/>
+  <text x="586" y="74" class="card">1..*</text>
+  <!-- dim_store -> fct -->
+  <path d="M145,180 L145,300 L600,300 L600,428 L636,428" fill="none" stroke="#52525b" stroke-width="1.5" marker-end="url(#e)"/>
+  <text x="360" y="294" class="card">1 .. *</text>
+  <!-- dim_date -> fct -->
+  <path d="M445,180 L445,340 L616,340 L616,446 L636,446" fill="none" stroke="#52525b" stroke-width="1.5" marker-end="url(#e)"/>
+  <text x="500" y="334" class="card">1 .. *</text>
+  <!-- fct -> mart (supplies target) -->
+  <path d="M775,380 L775,336" fill="none" stroke="#15803d" stroke-width="2" marker-end="url(#e)"/>
+  <text x="784" y="360" font-size="10.5" font-weight="700" fill="#15803d">supplies the target</text>
+  <!-- dim_event -> bridge -->
+  <path d="M270,470 L316,470" fill="none" stroke="#52525b" stroke-width="1.5" marker-end="url(#e)"/>
+  <text x="278" y="464" class="card">1..*</text>
+  <!-- seed -> bridge -->
+  <path d="M270,690 L295,690 L295,548 L316,548" fill="none" stroke="#b45309" stroke-width="1.8" marker-end="url(#e)"/>
+  <text x="300" y="620" font-size="10.5" font-weight="700" fill="#b45309" transform="rotate(-90 300 620)">determines</text>
+  <!-- dim_store -> bridge -->
+  <path d="M180,180 L180,352 L340,352 L340,416" fill="none" stroke="#52525b" stroke-width="1.5" marker-end="url(#e)"/>
+  <text x="240" y="346" class="card">1 .. *</text>
+  <!-- bridge -> mart -->
+  <path d="M570,470 L604,470 L604,258 L636,258" fill="none" stroke="#6d28d9" stroke-width="2" marker-end="url(#e)"/>
+  <text x="612" y="380" font-size="10.5" font-weight="700" fill="#6d28d9" transform="rotate(-90 612 380)">supplies event features</text>
+
+  <!-- footnote -->
+  <rect x="640" y="632" width="380" height="176" rx="8" fill="#fafafa" stroke="#a1a1aa" stroke-width="1.5"/>
+  <text x="658" y="656" font-size="12" font-weight="700" fill="#18181b">The decision worth arguing about</text>
+  <text x="658" y="678" font-size="10.5" fill="#52525b">Joining events to stores on <tspan font-style="italic">geography</tspan> seems natural</text>
+  <text x="658" y="694" font-size="10.5" fill="#52525b">and fails immediately:</text>
+  <text x="658" y="716" font-size="10.5" fill="#27272a">· Champions League tie — played in <tspan font-weight="700">Kazakhstan</tspan></text>
+  <text x="672" y="730" font-size="10.5" fill="#15803d">→ high UK relevance (midweek broadcast)</text>
+  <text x="658" y="750" font-size="10.5" fill="#27272a">· Argentinian Primera C — played in <tspan font-weight="700">Argentina</tspan></text>
+  <text x="672" y="764" font-size="10.5" fill="#b91c1c">→ none</text>
+  <text x="658" y="788" font-size="10.5" font-weight="700" fill="#18181b">Relevance follows broadcast reach, not venue.</text>
+  <text x="658" y="802" font-size="10" fill="#71717a">A commercial judgement — hence a seed, not SQL.</text>
+</svg>

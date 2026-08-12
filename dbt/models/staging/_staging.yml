@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: stg_sales
+    description: Sales line items, renamed and with the pizza flag derived. No rows dropped.
+    columns:
+      - name: transaction_id
+        tests: [not_null]
+      - name: store_id
+        tests: [not_null]
+      - name: is_pizza_line
+        tests: [not_null]
+
+  - name: stg_sports_events
+    description: Deduplicated events, one row per event_id, with kickoff hour derived.
+    columns:
+      - name: event_id
+        # The test that matters here: if deduplication regressed, every event weight
+        # downstream would be inflated. This is the guard.
+        tests: [unique, not_null]
+      - name: event_date
+        tests: [not_null]
+      - name: is_postponed
+        tests: [not_null]

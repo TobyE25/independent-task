@@ -1,0 +1,9 @@
+league_name,scope,applies_to_nation,weight,rationale
+English Premier League,national,,1.00,Peak UK broadcast audience. The strongest single driver of matchday grocery demand.
+FA Cup,national,,0.85,Widely broadcast; later rounds and the final carry most of the effect.
+English League Championship,national,,0.45,Broadcast but a smaller audience than the Premier League.
+UEFA Champions League,national,,0.90,Midweek evening broadcast with a large UK audience regardless of where the tie is played.
+NFL,national,,0.40,Late-evening UK broadcast with a growing but still niche audience.
+UFC,national,,0.55,Pay-per-view events drive concentrated at-home viewing occasions.
+Scottish Premiership,national,Scotland,0.60,Strong regional draw; weighted for Scottish stores via nation scope.
+Irish Premier Division,local,Northern Ireland,0.35,Local relevance to the Belfast catchment only.

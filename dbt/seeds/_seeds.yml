@@ -1,0 +1,37 @@
+version: 2
+
+seeds:
+  - name: seed_stores
+    description: >
+      The store estate. Reference data the business owns — the sales export carries only a
+      store_id, so this is the only source of a store's region and nation, which the local
+      relevance rules depend on. In production this would be sourced from the master data
+      system rather than a CSV; as a seed it is version-controlled and reviewable, which is
+      the property that matters here.
+    columns:
+      - name: store_id
+        tests: [unique, not_null]
+      - name: nation
+        tests:
+          - accepted_values:
+              arguments:
+                  values: ["England", "Scotland", "Wales", "Northern Ireland"]
+
+  - name: seed_event_relevance_rules
+    description: >
+      Which competitions move pizza demand, for whom, and by how much. This file is the least
+      certain and most influential part of the whole design, which is exactly why it is a
+      reviewable seed rather than a CASE statement buried in SQL (DECISIONS.md D8). Weights are
+      informed judgement, not fitted values — once there is enough history the Data Science
+      team should learn them, and this seed becomes the baseline they beat.
+    columns:
+      - name: league_name
+        tests: [unique, not_null]
+      - name: scope
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                  values: ["national", "local"]
+      - name: weight
+        tests: [not_null]

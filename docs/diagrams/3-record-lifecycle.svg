@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 880" width="1180" height="880" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="s" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0.5 L9,5 L0,9.5 z" fill="#52525b"/>
+    </marker>
+    <marker id="sR" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0.5 L9,5 L0,9.5 z" fill="#b91c1c"/>
+    </marker>
+    <marker id="sG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0.5 L9,5 L0,9.5 z" fill="#15803d"/>
+    </marker>
+    <marker id="sO" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0.5 L9,5 L0,9.5 z" fill="#b45309"/>
+    </marker>
+  </defs>
+  <rect width="1180" height="880" fill="#ffffff"/>
+
+  <!-- start -->
+  <circle cx="430" cy="34" r="11" fill="#18181b"/>
+  <path d="M430,45 L430,68" fill="none" stroke="#52525b" stroke-width="1.8" marker-end="url(#s)"/>
+
+  <!-- LANDED -->
+  <rect x="300" y="74" width="260" height="76" rx="10" fill="#fef2f2" stroke="#b91c1c" stroke-width="2"/>
+  <text x="430" y="100" font-size="15" font-weight="700" fill="#7f1d1d" text-anchor="middle">LANDED</text>
+  <text x="430" y="122" font-size="11.5" fill="#991b1b" text-anchor="middle">written to bronze / landing</text>
+  <text x="430" y="140" font-size="11.5" fill="#991b1b" text-anchor="middle">byte-for-byte · nothing interpreted yet</text>
+
+  <path d="M340,150 L300,150 L300,196 L262,196" fill="none" stroke="#52525b" stroke-width="1.8" marker-end="url(#s)"/>
+  <text x="272" y="172" font-size="11" font-weight="600" fill="#52525b" text-anchor="end">sales</text>
+  <path d="M520,150 L560,150 L560,196 L598,196" fill="none" stroke="#52525b" stroke-width="1.8" marker-end="url(#s)"/>
+  <text x="588" y="172" font-size="11" font-weight="600" fill="#52525b">sports</text>
+
+  <!-- two paths -->
+  <rect x="20" y="170" width="242" height="94" rx="10" fill="#fffbeb" stroke="#b45309" stroke-width="2"/>
+  <text x="141" y="196" font-size="13.5" font-weight="700" fill="#78350f" text-anchor="middle">PSEUDONYMISED</text>
+  <text x="141" y="218" font-size="11" fill="#92400e" text-anchor="middle">privacy policy runs FIRST</text>
+  <text x="141" y="236" font-size="11" fill="#92400e" text-anchor="middle">email · card last-4 · full postcode</text>
+  <text x="141" y="252" font-size="11" font-weight="600" fill="#b45309" text-anchor="middle">dropped before anything else</text>
+
+  <rect x="598" y="170" width="242" height="94" rx="10" fill="#f4f4f5" stroke="#71717a" stroke-width="2"/>
+  <text x="719" y="196" font-size="13.5" font-weight="700" fill="#27272a" text-anchor="middle">NORMALISED</text>
+  <text x="719" y="218" font-size="11" fill="#52525b" text-anchor="middle">provider fields mapped onto</text>
+  <text x="719" y="236" font-size="11" fill="#52525b" text-anchor="middle">the canonical shape</text>
+  <text x="719" y="252" font-size="11" fill="#71717a" text-anchor="middle">the one provider-specific seam</text>
+
+  <path d="M141,264 L141,296 L400,296 L400,320" fill="none" stroke="#52525b" stroke-width="1.8"/>
+  <path d="M719,264 L719,296 L460,296 L460,320" fill="none" stroke="#52525b" stroke-width="1.8"/>
+  <path d="M430,300 L430,320" fill="none" stroke="#52525b" stroke-width="1.8" marker-end="url(#s)"/>
+
+  <!-- VALIDATING -->
+  <rect x="310" y="326" width="240" height="66" rx="10" fill="#ffffff" stroke="#18181b" stroke-width="2.5"/>
+  <text x="430" y="352" font-size="14.5" font-weight="700" fill="#18181b" text-anchor="middle">VALIDATING</text>
+  <text x="430" y="374" font-size="11.5" fill="#52525b" text-anchor="middle">schema contract at the boundary</text>
+
+  <path d="M310,368 L200,368 L200,428" fill="none" stroke="#b91c1c" stroke-width="2" marker-end="url(#sR)"/>
+  <text x="212" y="404" font-size="11.5" font-weight="700" fill="#b91c1c">fails</text>
+  <path d="M550,368 L680,368 L680,428" fill="none" stroke="#15803d" stroke-width="2" marker-end="url(#sG)"/>
+  <text x="618" y="404" font-size="11.5" font-weight="700" fill="#15803d">passes</text>
+
+  <!-- QUARANTINED -->
+  <rect x="20" y="434" width="360" height="176" rx="10" fill="#fef2f2" stroke="#b91c1c" stroke-width="2.5"/>
+  <text x="200" y="460" font-size="14.5" font-weight="700" fill="#7f1d1d" text-anchor="middle">QUARANTINED</text>
+  <text x="200" y="482" font-size="11.5" font-weight="600" fill="#991b1b" text-anchor="middle">written aside WITH THE REASON</text>
+  <line x1="44" y1="494" x2="356" y2="494" stroke="#fca5a5" stroke-width="1.2"/>
+  <text x="40" y="514" font-size="11" fill="#52525b">never dropped · never fatal to the run</text>
+  <text x="40" y="534" font-size="11" fill="#52525b">the batch keeps its good rows</text>
+  <text x="40" y="558" font-size="11" font-weight="600" fill="#b91c1c">the RATE is a monitored metric:</text>
+  <text x="40" y="576" font-size="11" fill="#52525b">0.1% is upstream noise · 40% means the</text>
+  <text x="40" y="592" font-size="11" fill="#52525b">schema changed — page someone</text>
+
+  <!-- SILVER -->
+  <rect x="560" y="434" width="240" height="66" rx="10" fill="#fffbeb" stroke="#b45309" stroke-width="2"/>
+  <text x="680" y="460" font-size="14" font-weight="700" fill="#78350f" text-anchor="middle">SILVER</text>
+  <text x="680" y="482" font-size="11.5" fill="#92400e" text-anchor="middle">Parquet, partitioned by date</text>
+
+  <path d="M680,500 L680,530" fill="none" stroke="#52525b" stroke-width="1.8" marker-end="url(#s)"/>
+
+  <rect x="560" y="536" width="240" height="66" rx="10" fill="#fffbeb" stroke="#b45309" stroke-width="2"/>
+  <text x="680" y="562" font-size="14" font-weight="700" fill="#78350f" text-anchor="middle">REGISTERED</text>
+  <text x="680" y="584" font-size="11.5" fill="#92400e" text-anchor="middle">BigLake external table — no copy</text>
+
+  <path d="M680,602 L680,632" fill="none" stroke="#52525b" stroke-width="1.8" marker-end="url(#s)"/>
+
+  <rect x="560" y="638" width="240" height="66" rx="10" fill="#f0fdf4" stroke="#15803d" stroke-width="2"/>
+  <text x="680" y="664" font-size="14" font-weight="700" fill="#14532d" text-anchor="middle">MARTS</text>
+  <text x="680" y="686" font-size="11.5" fill="#166534" text-anchor="middle">dbt staging → marts · 50 data tests</text>
+
+  <path d="M600,704 L520,704 L520,760" fill="none" stroke="#15803d" stroke-width="2" marker-end="url(#sG)"/>
+  <text x="450" y="736" font-size="11" font-weight="600" fill="#15803d">50 tests pass</text>
+  <path d="M760,704 L860,704 L860,760" fill="none" stroke="#b45309" stroke-width="2" marker-end="url(#sO)"/>
+  <text x="872" y="736" font-size="11" font-weight="600" fill="#b45309">a test FAILS</text>
+
+  <!-- SERVING -->
+  <rect x="390" y="766" width="260" height="72" rx="10" fill="#dcfce7" stroke="#15803d" stroke-width="2.5"/>
+  <text x="520" y="792" font-size="14" font-weight="700" fill="#14532d" text-anchor="middle">SERVING</text>
+  <text x="520" y="812" font-size="11.5" fill="#166534" text-anchor="middle">Data Science + the dashboard</text>
+  <text x="520" y="830" font-size="11" fill="#15803d" text-anchor="middle">today's numbers</text>
+
+  <!-- STALE -->
+  <rect x="700" y="766" width="320" height="72" rx="10" fill="#fffbeb" stroke="#b45309" stroke-width="2.5"/>
+  <text x="860" y="790" font-size="14" font-weight="700" fill="#78350f" text-anchor="middle">STALE</text>
+  <text x="860" y="810" font-size="11.5" font-weight="600" fill="#92400e" text-anchor="middle">promotion stops — yesterday's mart serves on</text>
+  <text x="860" y="828" font-size="11" fill="#b45309" text-anchor="middle">marts go stale, never wrong</text>
+
+  <!-- late arrival -->
+  <rect x="860" y="170" width="300" height="188" rx="10" fill="#f5f3ff" stroke="#6d28d9" stroke-width="2"/>
+  <text x="1010" y="196" font-size="13" font-weight="700" fill="#4c1d95" text-anchor="middle">LATE ARRIVAL PATH</text>
+  <line x1="884" y1="208" x2="1136" y2="208" stroke="#ddd6fe" stroke-width="1.5"/>
+  <text x="880" y="230" font-size="11.5" fill="#5b21b6">An export lands after the 08:15</text>
+  <text x="880" y="248" font-size="11.5" fill="#5b21b6">cutoff. The daily run has already</text>
+  <text x="880" y="266" font-size="11.5" fill="#5b21b6">gone ahead without it.</text>
+  <text x="880" y="292" font-size="11.5" font-weight="700" fill="#4c1d95">REPROCESSED</text>
+  <text x="880" y="312" font-size="11" fill="#52525b">the reconcile step re-enters the</text>
+  <text x="880" y="328" font-size="11" fill="#52525b">flow at PSEUDONYMISED.</text>
+  <text x="880" y="350" font-size="11" font-weight="600" fill="#6d28d9">Idempotent — safe to run every time.</text>
+
+  <path d="M880,264 L560,264 L560,236 L268,236" fill="none" stroke="#6d28d9" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#s)"/>
+
+  <!-- headline note -->
+  <rect x="20" y="628" width="360" height="76" rx="8" fill="#fafafa" stroke="#a1a1aa" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <text x="40" y="650" font-size="11.5" font-weight="700" fill="#18181b">Quarantine differs by path, deliberately</text>
+  <text x="40" y="670" font-size="10.5" fill="#52525b">Sports keeps the RAW payload — that is the evidence.</text>
+  <text x="40" y="686" font-size="10.5" fill="#52525b">Sales keeps the PSEUDONYMISED row — the raw one is</text>
+  <text x="40" y="700" font-size="10.5" fill="#52525b">full of PII, and a quarantine file is still data at rest.</text>
+
+  <text x="20" y="860" font-size="11.5" fill="#71717a"><tspan font-weight="700">No path silently discards data.</tspan> Every terminal state is visible: quarantined with a reason, or landed-but-not-yet-promoted.</text>
+</svg>

@@ -1,0 +1,107 @@
+version: 2
+
+models:
+  - name: dim_store
+    description: The store estate, from seed_stores. Business key is store_id.
+    columns:
+      - name: store_id
+        tests: [unique, not_null]
+      - name: nation
+        tests: [not_null]
+
+  - name: dim_date
+    description: >
+      Date spine covering every date with sales or events. See the model header for the
+      deliberate simplification versus a full generated calendar.
+    columns:
+      - name: date_day
+        tests: [unique, not_null]
+      - name: iso_day_of_week
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                  values: [1, 2, 3, 4, 5, 6, 7]
+                  quote: false
+
+  - name: dim_event
+    description: One row per sporting event, including postponed ones.
+    columns:
+      - name: event_id
+        tests: [unique, not_null]
+      - name: event_date
+        tests: [not_null]
+
+  - name: fct_sales_daily
+    description: >
+      Sales aggregated to store x day. The point at which the last personal data disappears —
+      customer pseudonyms are aggregated away here, so nothing downstream contains any.
+    columns:
+      - name: store_id
+        tests:
+          - not_null
+          # Referential integrity. If a store_id appears in sales but not in the seed, the mart
+          # would silently lose that store's whole history to the inner join on dim_store — a
+          # store's demand quietly vanishing is far worse than a failed test.
+          - relationships:
+              arguments:
+                  to: ref('dim_store')
+                  field: store_id
+      - name: date_day
+        tests: [not_null]
+      - name: baskets
+        tests: [not_null]
+
+  - name: event_store_relevance
+    description: >
+      Bridge from events to the stores they affect, driven by seed_event_relevance_rules.
+      Relevance follows broadcast reach, not venue geography — see the model header.
+    columns:
+      - name: event_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                  to: ref('dim_event')
+                  field: event_id
+      - name: store_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                  to: ref('dim_store')
+                  field: store_id
+      - name: scope
+        tests:
+          - accepted_values:
+              arguments:
+                  values: ["national", "local"]
+
+  - name: mart_pizza_demand_daily
+    description: >
+      **The combined table.** One row per store per day, joining transactions to relevant
+      sporting events, ready for the Data Science team to model and for the Analytics dashboard
+      to read. Future dates carry event features with a null target by design — that is what a
+      forecast is scored against. Contains no personal data.
+    # Grain (one row per store per day) is enforced by
+    # tests/assert_mart_grain_is_store_day.sql. dbt_utils would offer
+    # unique_combination_of_columns for this, but taking a package dependency for a single test
+    # is not worth the version surface — see the note in dbt_project.yml.
+    columns:
+      - name: store_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                  to: ref('dim_store')
+                  field: store_id
+      - name: date_day
+        tests: [not_null]
+      - name: relevant_event_count
+        # Coalesced to zero, so it must never be null: a null here would silently exclude the row
+        # from any model that filters on it.
+        tests: [not_null]
+      - name: has_national_broadcast_event
+        tests: [not_null]
+      - name: has_sales_data
+        tests: [not_null]

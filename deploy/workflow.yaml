@@ -1,0 +1,167 @@
+# Cloud Workflows: the pipeline's orchestrator.
+#
+# This is the PRIMARY orchestration for Pizza Perfect. The brief asks for an orchestration-based
+# environment "in the form of a DAG or collection of functions/tasks run in sequential order" — this
+# is the second form, chosen on cost (DECISIONS.md D9): Workflows plus Cloud Run Jobs plus Scheduler
+# costs a few pounds a month against Cloud Composer's ~£250-350 for one daily pipeline.
+#
+# An equivalent Airflow DAG is provided at dags/pizza_perfect_daily.py for the environment where
+# Composer already exists and its platform fee is already paid.
+#
+# What Workflows gives us that a cron shell script would not: retries with backoff per step, a
+# visible execution graph and history, parallel branches, and structured error handling — the parts
+# of an orchestrator this pipeline actually uses.
+#
+# Deploy:
+#   gcloud workflows deploy pizza-perfect-daily --source=deploy/workflow.yaml \
+#       --location=europe-west2 --service-account=$WORKFLOW_SA
+#
+# Schedule (08:15 Europe/London — after the 05:00-08:00 export window):
+#   gcloud scheduler jobs create http pizza-perfect-daily \
+#       --schedule="15 8 * * *" --time-zone="Europe/London" --location=europe-west2 \
+#       --uri="https://workflowexecutions.googleapis.com/v1/projects/$PROJECT/locations/europe-west2/workflows/pizza-perfect-daily/executions" \
+#       --oauth-service-account-email=$SCHEDULER_SA
+
+main:
+  params: [args]
+  steps:
+    - init:
+        assign:
+          - project: ${sys.get_env("GOOGLE_CLOUD_PROJECT_ID")}
+          - region: "europe-west2"
+          # The logical date. Defaults to today, but overridable so a backfill is a parameter
+          # rather than a code change — the same reason dbt takes as_of_date as a var.
+          - logical_date: ${default(map.get(args, "logical_date"), text.substring(time.format(sys.now()), 0, 10))}
+          # Shards for the sales load. 8 containers handles today's 31 files and the forecast's 304
+          # without a change; raise it when a shard's runtime becomes the critical path.
+          - sales_shards: ${default(map.get(args, "sales_shards"), 8)}
+          - run_id: ${"workflow__" + logical_date}
+
+    - log_start:
+        call: sys.log
+        args:
+          text: ${"pizza-perfect starting for " + logical_date + " with " + string(sales_shards) + " sales shards"}
+          severity: INFO
+
+    # The two ingestion branches are independent — the sports API has nothing to do with the CSV
+    # drop — so they run concurrently. Coupling them would let a slow, rate-limited API pull delay
+    # the sales load for no reason.
+    - ingest_in_parallel:
+        parallel:
+          branches:
+            - sports_branch:
+                steps:
+                  - run_sports:
+                      call: run_job
+                      args:
+                        project: ${project}
+                        region: ${region}
+                        job: "pizza-perfect-ingest-sports"
+                        overrides:
+                          containerOverrides:
+                            - args:
+                                - "--run-id"
+                                - ${run_id}
+                                - "ingest-sports"
+                                - "--start"
+                                - ${text.substring(time.format(time.parse(logical_date + "T00:00:00Z") - 604800), 0, 10)}
+                                - "--end"
+                                - ${text.substring(time.format(time.parse(logical_date + "T00:00:00Z") + 1814400), 0, 10)}
+                                - "--ingest-date"
+                                - ${logical_date}
+
+            - sales_branch:
+                steps:
+                  # Cloud Run Jobs' native task parallelism replaces Airflow's dynamic task mapping:
+                  # taskCount containers each take every Nth export (see cli.ingest_sales). Sharding
+                  # is deterministic by index, so no two containers can claim the same file and no
+                  # coordination is required.
+                  - run_sales:
+                      call: run_job
+                      args:
+                        project: ${project}
+                        region: ${region}
+                        job: "pizza-perfect-ingest-sales"
+                        overrides:
+                          taskCount: ${sales_shards}
+                          containerOverrides:
+                            - args: ["--run-id", "${run_id}", "ingest-sales"]
+
+    # Cheap and idempotent: creates or replaces the BigLake external table definitions. Moves no
+    # data, because the lake already holds it in Parquet (D4).
+    - register_silver:
+        call: run_job
+        args:
+          project: ${project}
+          region: ${region}
+          job: "pizza-perfect-register"
+          overrides:
+            containerOverrides:
+              - args: ["register"]
+
+    - build_marts:
+        call: run_job
+        args:
+          project: ${project}
+          region: ${region}
+          job: "pizza-perfect-dbt"
+          overrides:
+            containerOverrides:
+              # as_of_date is the logical date, not the wall clock, so a backfill does not fail a
+              # future-date test that has nothing to do with the data's correctness.
+              - args:
+                  - "build"
+                  - "--project-dir"
+                  - "dbt"
+                  - "--vars"
+                  - '${"{as_of_date: \"" + logical_date + "\"}"}'
+
+    # Catches exports that arrived after the cutoff. Runs regardless of what happened above, because
+    # a partial load is exactly when reconciliation matters most — the Workflows equivalent of
+    # Airflow's trigger_rule="all_done".
+    - reconcile:
+        try:
+          call: run_job
+          args:
+            project: ${project}
+            region: ${region}
+            job: "pizza-perfect-reconcile"
+            overrides:
+              containerOverrides:
+                - args: ["--run-id", "${run_id}", "reconcile"]
+        except:
+          as: e
+          steps:
+            - log_reconcile_failure:
+                call: sys.log
+                args:
+                  text: '${"reconciliation failed - " + json.encode_to_string(e)}'
+                  severity: WARNING
+
+    - done:
+        return: ${"completed for " + logical_date}
+
+# One helper, so retry policy is defined once rather than copied into five steps.
+run_job:
+  params: [project, region, job, overrides: {}]
+  steps:
+    - execute:
+        try:
+          call: googleapis.run.v1.namespaces.jobs.run
+          args:
+            name: ${"namespaces/" + project + "/jobs/" + job}
+            location: ${region}
+            body:
+              overrides: ${overrides}
+          result: execution
+        retry:
+          # Retries transient infrastructure failures only. A pipeline bug fails identically every
+          # time, and retrying it just delays the error reaching someone who can fix it.
+          predicate: ${http.default_retry_predicate}
+          max_retries: 3
+          backoff:
+            initial_delay: 30
+            max_delay: 300
+            multiplier: 2
+    - report:
+        return: ${execution}

@@ -1,0 +1,19 @@
+# Development and test dependencies.
+#
+# Airflow lives here, not in requirements.txt, and that placement is the argument in
+# DECISIONS.md D14 made mechanical: the pipeline does not import Airflow, so Airflow is
+# only needed to *run the orchestrator* and to test that the DAG is well-formed.
+#
+# Install:  pip install -r requirements.txt -r requirements-dev.txt
+
+-r requirements.txt
+
+pytest>=8.0             # test runner
+responses>=0.25         # mock HTTP responses: client tests are offline and deterministic
+ruff>=0.5               # lint + format, matching the toolchain in CI
+
+# No Airflow. The orchestrator is Cloud Workflows (DECISIONS.md D9), and the Airflow alternative is
+# described as pseudocode in DESIGN.md rather than shipped as code. Worth recording why: installing
+# apache-airflow into this environment pins typing-extensions back far enough to break pydantic,
+# which breaks both pytest and dbt-core. Carrying a component we had already decided against, at the
+# cost of a broken toolchain, would have been a poor trade.

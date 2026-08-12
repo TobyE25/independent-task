@@ -1,0 +1,29 @@
+# Kept in the repo rather than ~/.dbt so the project is reproducible by anyone who clones it.
+# Safe to commit because it contains no secrets: DuckDB is a local file, and BigQuery uses
+# the caller's own gcloud credentials (oauth) rather than a service-account key.
+pizza_perfect:
+  target: "{{ env_var('DBT_TARGET', 'duckdb') }}"
+  outputs:
+    duckdb:
+      type: duckdb
+      # The same file pipeline/warehouse.py registers the silver views in, so dbt reads the
+      # Parquet in the lake rather than a copy.
+      #
+      # dbt-duckdb resolves this relative to the *process* working directory, not the project
+      # directory, so dbt must be invoked from the repo root (which is what the Makefile does).
+      # Overridable via DUCKDB_PATH so CI and one-off runs are not forced into that convention.
+      path: "{{ env_var('DUCKDB_PATH', 'data/warehouse.duckdb') }}"
+      schema: main
+      threads: 4
+
+    bigquery:
+      type: bigquery
+      # oauth, not a service-account key file: nothing to leak, nothing to rotate, and it
+      # matches how a developer actually runs dbt locally. Composer/CI would use the
+      # workload's attached identity instead.
+      method: oauth
+      project: "{{ env_var('GCP_PROJECT', '') }}"
+      dataset: "{{ env_var('BQ_DATASET', 'pizza_perfect') }}"
+      location: "{{ env_var('GCP_LOCATION', 'europe-west2') }}"
+      threads: 4
+      priority: interactive

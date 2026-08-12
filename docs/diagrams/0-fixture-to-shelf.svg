@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 520" width="1180" height="520" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0.5 L9,5 L0,9.5 z" fill="#52525b"/>
+    </marker>
+    <marker id="aB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0.5 L9,5 L0,9.5 z" fill="#1d4ed8"/>
+    </marker>
+    <marker id="aG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0.5 L9,5 L0,9.5 z" fill="#a1a1aa"/>
+    </marker>
+  </defs>
+
+  <rect width="1180" height="520" fill="#ffffff"/>
+
+  <!-- column headings -->
+  <text x="120" y="34" font-size="13" font-weight="700" fill="#71717a" letter-spacing="1.2">SIGNALS</text>
+  <text x="400" y="34" font-size="13" font-weight="700" fill="#1d4ed8" letter-spacing="1.2">THIS PIPELINE</text>
+  <text x="760" y="34" font-size="13" font-weight="700" fill="#71717a" letter-spacing="1.2">DOWNSTREAM — OTHER TEAMS</text>
+  <line x1="30" y1="44" x2="1150" y2="44" stroke="#e4e4e7" stroke-width="1"/>
+
+  <!-- signals -->
+  <rect x="30" y="70" width="200" height="94" rx="8" fill="#fafafa" stroke="#a1a1aa" stroke-width="1.5"/>
+  <text x="46" y="94" font-size="14" font-weight="600" fill="#18181b">Fixture list</text>
+  <text x="46" y="116" font-size="12" fill="#52525b">Arsenal v Coventry City</text>
+  <text x="46" y="134" font-size="12" fill="#52525b">Sat 21 Aug, 19:00</text>
+  <text x="46" y="154" font-size="11" fill="#a1a1aa">live sports API</text>
+
+  <rect x="30" y="196" width="200" height="94" rx="8" fill="#fafafa" stroke="#a1a1aa" stroke-width="1.5"/>
+  <text x="46" y="220" font-size="14" font-weight="600" fill="#18181b">Yesterday's tills</text>
+  <text x="46" y="242" font-size="12" fill="#52525b">what actually sold,</text>
+  <text x="46" y="260" font-size="12" fill="#52525b">per store</text>
+  <text x="46" y="280" font-size="11" fill="#a1a1aa">daily CSV drop</text>
+
+  <!-- the pipeline -->
+  <rect x="330" y="88" width="230" height="204" rx="10" fill="#eff6ff" stroke="#1d4ed8" stroke-width="3"/>
+  <text x="445" y="120" font-size="15" font-weight="700" fill="#1d4ed8" text-anchor="middle">ingest</text>
+  <text x="445" y="142" font-size="15" font-weight="700" fill="#1d4ed8" text-anchor="middle">· pseudonymise</text>
+  <text x="445" y="164" font-size="15" font-weight="700" fill="#1d4ed8" text-anchor="middle">· model</text>
+  <line x1="356" y1="186" x2="534" y2="186" stroke="#93c5fd" stroke-width="1.5"/>
+  <text x="445" y="212" font-size="13" font-weight="600" fill="#1e3a8a" text-anchor="middle">mart_pizza_demand_daily</text>
+  <text x="445" y="236" font-size="12" fill="#1d4ed8" text-anchor="middle">one row per store × day</text>
+  <text x="445" y="262" font-size="11" fill="#3b82f6" text-anchor="middle">sales measures + event features</text>
+  <text x="445" y="278" font-size="11" fill="#3b82f6" text-anchor="middle">future dates carry a null target</text>
+
+  <!-- arrows in -->
+  <path d="M230,117 L292,117 L292,170 L326,170" fill="none" stroke="#1d4ed8" stroke-width="2" marker-end="url(#aB)"/>
+  <path d="M230,243 L292,243 L292,200 L326,200" fill="none" stroke="#1d4ed8" stroke-width="2" marker-end="url(#aB)"/>
+
+  <!-- downstream -->
+  <rect x="660" y="70" width="200" height="86" rx="8" fill="#f4f4f5" stroke="#a1a1aa" stroke-width="1.5"/>
+  <text x="676" y="94" font-size="14" font-weight="600" fill="#18181b">Data Science</text>
+  <text x="676" y="116" font-size="12" fill="#52525b">fits a demand model:</text>
+  <text x="676" y="136" font-size="11.5" fill="#52525b" font-style="italic">units = f(events, dow, history)</text>
+
+  <rect x="660" y="188" width="200" height="104" rx="8" fill="#f4f4f5" stroke="#a1a1aa" stroke-width="1.5"/>
+  <text x="676" y="212" font-size="14" font-weight="600" fill="#18181b">Forecast</text>
+  <text x="676" y="236" font-size="12" fill="#52525b">“Camden needs 340 units</text>
+  <text x="676" y="254" font-size="12" fill="#52525b">on the 21st — up 26% on</text>
+  <text x="676" y="272" font-size="12" fill="#52525b">a normal Saturday”</text>
+
+  <rect x="920" y="188" width="200" height="70" rx="8" fill="#f4f4f5" stroke="#a1a1aa" stroke-width="1.5"/>
+  <text x="936" y="212" font-size="14" font-weight="600" fill="#18181b">Analytics dashboard</text>
+  <text x="936" y="234" font-size="12" fill="#52525b">buyers and</text>
+  <text x="936" y="250" font-size="12" fill="#52525b">store managers</text>
+
+  <rect x="920" y="292" width="200" height="70" rx="8" fill="#f4f4f5" stroke="#a1a1aa" stroke-width="1.5"/>
+  <text x="936" y="316" font-size="14" font-weight="600" fill="#18181b">Replenishment</text>
+  <text x="936" y="338" font-size="12" fill="#52525b">order raised against</text>
+  <text x="936" y="354" font-size="12" fill="#52525b">supplier lead time</text>
+
+  <!-- outcome -->
+  <rect x="660" y="404" width="460" height="66" rx="33" fill="#dcfce7" stroke="#16a34a" stroke-width="2.5"/>
+  <text x="890" y="434" font-size="16" font-weight="700" fill="#14532d" text-anchor="middle">PIZZAS ON THE SHELF</text>
+  <text x="890" y="456" font-size="12.5" fill="#166534" text-anchor="middle">when the match starts</text>
+
+  <!-- downstream arrows -->
+  <path d="M560,180 L620,180 L620,113 L656,113" fill="none" stroke="#a1a1aa" stroke-width="1.8" marker-end="url(#aG)"/>
+  <path d="M760,156 L760,184" fill="none" stroke="#a1a1aa" stroke-width="1.8" marker-end="url(#aG)"/>
+  <path d="M860,222 L916,222" fill="none" stroke="#a1a1aa" stroke-width="1.8" marker-end="url(#aG)"/>
+  <path d="M860,260 L888,260 L888,323 L916,323" fill="none" stroke="#a1a1aa" stroke-width="1.8" marker-end="url(#aG)"/>
+  <path d="M1020,362 L1020,400" fill="none" stroke="#16a34a" stroke-width="2" marker-end="url(#a)"/>
+
+  <!-- feedback loop -->
+  <path d="M660,437 L300,437 L300,300 L130,300 L130,294" fill="none" stroke="#71717a" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#a)"/>
+  <text x="330" y="428" font-size="11.5" fill="#52525b" font-style="italic">tomorrow's tills become training data</text>
+
+  <!-- boundary caption -->
+  <rect x="330" y="316" width="230" height="52" rx="6" fill="#ffffff" stroke="#93c5fd" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="445" y="336" font-size="11" font-weight="600" fill="#1d4ed8" text-anchor="middle">my responsibility ends here</text>
+  <text x="445" y="354" font-size="10.5" fill="#3b82f6" text-anchor="middle">a trustworthy table, not a model</text>
+
+  <!-- footnote -->
+  <text x="30" y="470" font-size="11.5" fill="#71717a">This forecasts <tspan font-weight="700">demand</tspan>, not stock. “Will Camden run out?” additionally needs stock-on-hand,</text>
+  <text x="30" y="488" font-size="11.5" fill="#71717a">in-transit quantities and supplier lead times — a third source, named as an extension.</text>
+</svg>

@@ -1,0 +1,34 @@
+version: 2
+
+sources:
+  - name: lake
+    description: >
+      The silver layer, exposed over Parquet in object storage — DuckDB views locally, BigLake
+      external tables on GCP. Neither copies the data (DECISIONS.md D4): dbt reads the same
+      objects the ingestion job wrote, so there is one copy of the bytes in an open format.
+    schema: "{{ var('raw_schema') }}"
+    tables:
+      - name: raw_sales
+        description: >
+          One row per transaction line item, already pseudonymised. No direct identifiers reach
+          this layer — see pipeline/privacy.py. Partitioned by transaction_date.
+        columns:
+          - name: transaction_id
+            tests: [not_null]
+          - name: store_id
+            tests: [not_null]
+          - name: transaction_date
+            tests: [not_null]
+          - name: quantity
+            tests: [not_null]
+
+      - name: raw_sports_events
+        description: >
+          Canonical sporting events. May contain the same event more than once, because the
+          by-day sweep and the by-league watchlist overlap by design — staging deduplicates.
+          Partitioned by ingest_date, since a fixture list is a snapshot that changes.
+        columns:
+          - name: event_id
+            tests: [not_null]
+          - name: event_date
+            tests: [not_null]

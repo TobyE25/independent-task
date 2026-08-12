@@ -1,0 +1,40 @@
+name: pizza_perfect
+version: "0.1.0"
+config-version: 2
+profile: pizza_perfect
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+# No dbt packages. dbt_utils would give us date_spine and a few conveniences, but every
+# package is a version to track and an upgrade to test, and this project needs two helpers it
+# can write in ten lines of SQL. Fewer dependencies is fewer things to patch.
+
+vars:
+  # The schema holding the raw layer registered by pipeline/warehouse.py. Overridden per
+  # target so the same models run against DuckDB views and BigQuery external tables.
+  raw_schema: main
+
+  # The pipeline's *logical* date — what Airflow calls the data interval end — not the wall
+  # clock. Tests that assert "nothing is dated in the future" must compare against this, or a
+  # backfill of last year's data fails against today's date and the same dataset passes or fails
+  # depending on when somebody happens to run it. Empty means "fall back to current_date".
+  as_of_date: ""
+
+models:
+  pizza_perfect:
+    staging:
+      # Views: staging is thin renaming and casting, so materialising it would double the
+      # storage and add a build step for no query-time gain.
+      +materialized: view
+    marts:
+      # Tables: marts are queried repeatedly by the dashboard and by the Data Science team,
+      # so the transformation cost is paid once at build rather than on every read.
+      +materialized: table
+
+seeds:
+  pizza_perfect:
+    +quote_columns: false
