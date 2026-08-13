@@ -235,12 +235,12 @@ the choice constrains nobody.
 Joining events to stores on geography seems natural and fails immediately. The live data makes the point
 better than an argument could:
 
-| Fixture in the sample                                    | Venue         | UK relevance                                    |
-| -------------------------------------------------------- | ------------- | ----------------------------------------------- |
+| Fixture in the sample                                  | Venue         | UK relevance                                    |
+| ------------------------------------------------------ | ------------- | ----------------------------------------------- |
 | Kairat Almaty vs Levski Sofia*(UEFA Champions League)* | Kazakhstan    | **High** — midweek UK broadcast          |
 | Cincinnati Bengals vs Detroit Lions*(NFL)*             | United States | **Moderate** — late-evening UK broadcast |
 | Wolverhampton vs Blackburn*(Championship)*             | England       | **Moderate**                              |
-| Argentinian Primera C fixture                            | Argentina     | **None**                                  |
+| Argentinian Primera C fixture                          | Argentina     | **None**                                  |
 
 A geographic join gets three of those four wrong. **Relevance follows broadcast reach, not venue
 location** — which is a commercial judgement, not something derivable from the event feed. That is why it
